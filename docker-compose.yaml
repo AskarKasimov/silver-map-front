@@ -1,0 +1,11 @@
+version: "3.9"
+services:
+  project:
+    build:
+      context: ./
+    container_name: project
+    environment:
+      - VITE_API_URL=https://api.project.com
+    restart: on-failure
+    ports:
+      - '3000:3000'

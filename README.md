@@ -1,0 +1,1 @@
+# Project pattern for frontend
