@@ -54,4 +54,4 @@ jobs:
           docker compose -f docker-compose.deploy.yaml down
           docker compose -f docker-compose.deploy.yaml up -d
         env:
-          VITE_API_URL: https://silvermap.askar.su/api
+          VITE_API_URL: https://api.silvermap.askar.su
