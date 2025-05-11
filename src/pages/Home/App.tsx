@@ -10,6 +10,7 @@ const MAP_STYLE =
 const INITIAL_CENTER: [number, number] = [37.6173, 55.7558];
 const INITIAL_ZOOM = 11;
 
+// Ваш оригинальный интерфейс для свойств точек
 interface PoetPointProperties {
   id: number;
   name: string;
@@ -17,6 +18,24 @@ interface PoetPointProperties {
   lat: number;
   lng: number;
   photo: string;
+}
+
+// Интерфейс для свойств кластеров
+interface ClusterProperties {
+  cluster: true;
+  cluster_id: number;
+  point_count: number;
+  point_count_abbreviated: number;
+}
+
+// Типы для фич
+type PoetPointFeature = PointFeature<PoetPointProperties>;
+type PoetClusterFeature = ClusterFeature<ClusterProperties>;
+type PoetFeature = PoetPointFeature | PoetClusterFeature;
+
+// Type guard для проверки типа фичи
+function isPointFeature(feature: PoetFeature): feature is PoetPointFeature {
+  return !('cluster' in feature.properties) || !feature.properties.cluster;
 }
 
 const poetsLocations: PoetPointProperties[] = [
@@ -57,23 +76,23 @@ const App: React.FC = () => {
   };
 
   // Функция создания маркера
-  const createMarker = (
-    feature:
-      | PointFeature<PoetPointProperties>
-      | ClusterFeature<PoetPointProperties>
-  ) => {
+  const createMarker = (feature: PoetFeature) => {
     const { geometry, properties } = feature;
     const coordinates = geometry.coordinates as [number, number];
-    const isCluster = 'cluster' in properties && properties.cluster;
 
     const el = document.createElement('div');
-    if (isCluster) {
+
+    if (!isPointFeature(feature)) {
+      // Обработка кластера
+      const clusterProps = properties as ClusterProperties;
       el.className = 'cluster-marker';
-      el.innerHTML = `<span>${properties.point_count}</span>`;
+      el.innerHTML = `<span>${clusterProps.point_count}</span>`;
     } else {
+      // Обработка точки - здесь доступны все PoetPointProperties
+      const pointProps = properties as PoetPointProperties;
       el.className = 'sepia-marker';
       el.style.backgroundImage = `url(${markerPoint})`;
-      el.title = properties.name;
+      el.title = pointProps.name;
     }
 
     const marker = new maplibregl.Marker({
@@ -81,16 +100,17 @@ const App: React.FC = () => {
       anchor: 'center',
     }).setLngLat(coordinates);
 
-    // Для точек
-    if (!isCluster) {
+    // Добавляем popup только для точек
+    if (isPointFeature(feature)) {
+      const pointProps = properties as PoetPointProperties;
       marker.setPopup(
         new maplibregl.Popup({ offset: 25 }).setHTML(`
-        <div class="vintage-popup">
-          <h3>${properties.name}</h3>
-          <p>${properties.description}</p>
-          <img src="${properties.photo}" alt="${properties.name}" width="140">
-        </div>
-      `)
+      <div class="vintage-popup">
+        <h3>${pointProps.name}</h3>
+        <p>${pointProps.description}</p>
+        <img src="${pointProps.photo}" alt="${pointProps.name}" width="140">
+      </div>
+    `)
       );
     }
 
@@ -114,7 +134,7 @@ const App: React.FC = () => {
     const clusters = superclusterRef.current.getClusters(
       bbox,
       Math.floor(zoom)
-    );
+    ) as PoetFeature[];
 
     // Очищаем все предыдущие маркеры
     clearAllMarkers();
@@ -124,11 +144,11 @@ const App: React.FC = () => {
       const marker = createMarker(cluster);
       marker.addTo(mapRef.current!);
 
-      // Сохраняем маркер в ref
-      const key =
-        'cluster' in cluster.properties && cluster.properties.cluster
-          ? `cluster-${cluster.properties.cluster_id}`
-          : `point-${cluster.properties.id}`; // Только для точек, проверяем наличие id
+      // Создаем уникальный ключ для маркера
+      const key = isPointFeature(cluster)
+        ? `point-${cluster.properties.id}`
+        : `cluster-${cluster.properties.cluster_id}`;
+
       markersRef.current[key] = marker;
     });
   };
@@ -149,7 +169,10 @@ const App: React.FC = () => {
       );
 
       // Инициализация Supercluster
-      superclusterRef.current = new Supercluster<PoetPointProperties>({
+      superclusterRef.current = new Supercluster<
+        PoetPointProperties,
+        ClusterProperties
+      >({
         radius: 60,
         maxZoom: 16,
       });
@@ -190,7 +213,7 @@ const App: React.FC = () => {
       mapRef.current = null;
       superclusterRef.current = null;
     };
-  }, []);
+  });
 
   return (
     <div className="sepia-map-container">
