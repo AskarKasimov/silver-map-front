@@ -1,0 +1,9 @@
+services:
+  project:
+    image: ghcr.io/askarkasimov/silver-map-front:latest
+    container_name: silver_frontend_prod
+    environment:
+      - VITE_API_URL=${VITE_API_URL}
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"
