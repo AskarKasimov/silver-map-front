@@ -10,7 +10,6 @@ const MAP_STYLE =
 const INITIAL_CENTER: [number, number] = [37.6173, 55.7558];
 const INITIAL_ZOOM = 11;
 
-// Ваш оригинальный интерфейс для свойств точек
 interface PoetPointProperties {
   id: number;
   name: string;
@@ -20,7 +19,6 @@ interface PoetPointProperties {
   photo: string;
 }
 
-// Интерфейс для свойств кластеров
 interface ClusterProperties {
   cluster: true;
   cluster_id: number;
@@ -28,7 +26,6 @@ interface ClusterProperties {
   point_count_abbreviated: number;
 }
 
-// Типы для фич
 type PoetPointFeature = PointFeature<PoetPointProperties>;
 type PoetClusterFeature = ClusterFeature<ClusterProperties>;
 type PoetFeature = PoetPointFeature | PoetClusterFeature;
@@ -69,13 +66,11 @@ const App: React.FC = () => {
 
   const markersRef = useRef<{ [key: string]: maplibregl.Marker }>({});
 
-  // Функция для очистки всех маркеров
   const clearAllMarkers = () => {
     Object.values(markersRef.current).forEach((marker) => marker.remove());
     markersRef.current = {};
   };
 
-  // Функция создания маркера
   const createMarker = (feature: PoetFeature) => {
     const { geometry, properties } = feature;
     const coordinates = geometry.coordinates as [number, number];
@@ -83,12 +78,28 @@ const App: React.FC = () => {
     const el = document.createElement('div');
 
     if (!isPointFeature(feature)) {
-      // Обработка кластера
+      // маркер - кластер
       const clusterProps = properties as ClusterProperties;
       el.className = 'cluster-marker';
       el.innerHTML = `<span>${clusterProps.point_count}</span>`;
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (mapRef.current && superclusterRef.current) {
+          // точный зум, при котором кластер раскроется
+          const expansionZoom = superclusterRef.current.getClusterExpansionZoom(
+            feature.properties.cluster_id
+          );
+
+          // приближение к кластеру
+          mapRef.current.flyTo({
+            center: coordinates,
+            zoom: expansionZoom,
+            speed: 0.5,
+          });
+        }
+      });
     } else {
-      // Обработка точки - здесь доступны все PoetPointProperties
+      // маркер - точка
       const pointProps = properties as PoetPointProperties;
       el.className = 'sepia-marker';
       el.style.backgroundImage = `url(${markerPoint})`;
@@ -130,21 +141,18 @@ const App: React.FC = () => {
       bounds.getNorth(),
     ] as [number, number, number, number];
 
-    // Получаем актуальные кластеры
     const clusters = superclusterRef.current.getClusters(
       bbox,
       Math.floor(zoom)
     ) as PoetFeature[];
 
-    // Очищаем все предыдущие маркеры
     clearAllMarkers();
 
-    // Добавляем новые маркеры
     clusters.forEach((cluster) => {
       const marker = createMarker(cluster);
       marker.addTo(mapRef.current!);
 
-      // Создаем уникальный ключ для маркера
+      // ключ для маркера
       const key = isPointFeature(cluster)
         ? `point-${cluster.properties.id}`
         : `cluster-${cluster.properties.cluster_id}`;
@@ -155,7 +163,6 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (mapContainer.current && !mapRef.current) {
-      // Инициализация карты
       mapRef.current = new maplibregl.Map({
         container: mapContainer.current,
         style: MAP_STYLE,
@@ -168,7 +175,6 @@ const App: React.FC = () => {
         'top-right'
       );
 
-      // Инициализация Supercluster
       superclusterRef.current = new Supercluster<
         PoetPointProperties,
         ClusterProperties
@@ -177,7 +183,7 @@ const App: React.FC = () => {
         maxZoom: 16,
       });
 
-      // Преобразование данных в формат, который ожидает Supercluster
+      // формат Supercluster
       const points: PointFeature<PoetPointProperties>[] = poetsLocations.map(
         (location) => ({
           type: 'Feature',
@@ -196,13 +202,11 @@ const App: React.FC = () => {
         })
       );
 
-      superclusterRef.current.load(points); // Загрузка точек
+      superclusterRef.current.load(points); // загрузка точек
 
-      // Подписка на события
       mapRef.current.on('moveend', updateClusters);
       mapRef.current.on('zoomend', updateClusters);
 
-      // Первоначальная отрисовка
       updateClusters();
     }
 

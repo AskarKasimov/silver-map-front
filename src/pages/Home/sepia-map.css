@@ -18,9 +18,10 @@
 
 /* Стили для кластеров */
 .cluster-marker {
+    cursor: pointer;
     width: 32px;
     height: 32px;
-    background-color: #000000; /* сепия */
+    background-color: #000000;
     border-radius: 50%;
     display: flex;
     justify-content: center;
