@@ -56,6 +56,6 @@ jobs:
         run: |
           docker compose -f docker-compose.deploy.yaml down
           docker compose -f docker-compose.deploy.yaml up -d --force-recreate
-          docker image prune
+          docker image prune -f
         env:
           VITE_API_URL: https://api.silvermap.askar.su
