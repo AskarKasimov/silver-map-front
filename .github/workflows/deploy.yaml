@@ -2,7 +2,7 @@ name: Build and Deploy
 
 on:
   push:
-    branches: [master]
+    branches: [ master ]
 
 env:
   REGISTRY: ghcr.io
@@ -30,7 +30,6 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          context: ./
           file: ./Dockerfile
           push: true
           tags: |
@@ -49,9 +48,14 @@ jobs:
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u askarkasimov --password-stdin
 
+      - name: Pull latest image
+        run: |
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
       - name: Deploy
         run: |
           docker compose -f docker-compose.deploy.yaml down
-          docker compose -f docker-compose.deploy.yaml up -d
+          docker compose -f docker-compose.deploy.yaml up -d --force-recreate
+          docker image prune
         env:
           VITE_API_URL: https://api.silvermap.askar.su
