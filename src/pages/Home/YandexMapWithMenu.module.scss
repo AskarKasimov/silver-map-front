@@ -1,0 +1,116 @@
+.container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.map {
+    width: 100vw;
+    height: 100vh;
+}
+
+.menuToggle {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    width: 50px;
+    height: 50px;
+    background-color: #3f51b5;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+
+    &:hover {
+        background-color: #303f9f;
+        transform: scale(1.05);
+    }
+
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.5);
+    }
+}
+
+.slidingMenu {
+    position: absolute;
+    top: 0;
+    left: -300px;
+    width: 300px;
+    height: 100%;
+    background-color: white;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 900;
+    padding: 20px;
+    overflow-y: auto;
+
+    &.visible {
+        left: 0;
+    }
+}
+
+.pointsList {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0 0;
+}
+
+.pointItem {
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background-color: #e0e0e0;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    &.active {
+        background-color: #3f51b5;
+        color: white;
+        box-shadow: 0 2px 8px rgba(63, 81, 181, 0.5);
+    }
+}
+
+.pointName {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.pointDescription {
+    font-size: 14px;
+    color: #666;
+
+    .active & {
+        color: rgba(255, 255, 255, 0.8);
+    }
+}
+
+h2 {
+    margin-top: 10px;
+    font-size: 20px;
+    font-weight: 500;
+    color: #333;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+@media (max-width: 768px) {
+    .slidingMenu {
+        width: 250px;
+        left: -250px;
+    }
+}
