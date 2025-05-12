@@ -19,17 +19,17 @@
 /* Стили для кластеров */
 .cluster-marker {
     cursor: pointer;
-    width: 32px;
-    height: 32px;
-    background-color: #000000;
+    width: 42px;
+    height: 42px;
+    background-color: #98562D;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: white;
+    color: #FFFFFF;
     font-weight: bold;
-    font-size: 14px;
-    border: 10px groove #FFFFFF;
+    font-size: 16px;
+    border: 7px double #FFFFFF;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 

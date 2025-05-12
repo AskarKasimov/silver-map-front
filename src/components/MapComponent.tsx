@@ -76,7 +76,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ points }) => {
           mapRef.current.flyTo({
             center: coordinates,
             zoom: expansionZoom,
-            speed: 0.5,
+            speed: 1.5,
           });
         }
       });
