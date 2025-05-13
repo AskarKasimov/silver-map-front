@@ -40,6 +40,7 @@ export default [
       semi: ['error', 'always'],
       quotes: ['error', 'single'],
       'prettier/prettier': 'error',
+      'linebreak-style': 'off',
     },
   },
 ];
