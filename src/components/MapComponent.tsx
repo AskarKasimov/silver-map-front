@@ -1,9 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import './map.css';
+import styles from './MapComponent.module.scss';
 import markerPoint from '@assets/point.png';
 import Supercluster, { ClusterFeature, PointFeature } from 'supercluster';
+import { truncateText } from '../utils/text.ts';
 
 const MAP_STYLE =
   'https://api.maptiler.com/maps/019672dc-4df0-7fa6-afc6-39c61c2ed227/style.json?key=iKHXej3Rp2N1NAr4Xjdf';
@@ -62,7 +63,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ points }) => {
     if (!isPointFeature(feature)) {
       // маркер - кластер
       const clusterProps = properties as ClusterProperties;
-      el.className = 'cluster-marker';
+      el.className = styles.clusterMarker;
       el.innerHTML = `<span>${clusterProps.point_count}</span>`;
       el.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -83,7 +84,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ points }) => {
     } else {
       // маркер - точка
       const pointProps = properties as PoetPointProperties;
-      el.className = 'sepia-marker';
+      el.className = styles.sepiaMarker;
       el.style.backgroundImage = `url(${markerPoint})`;
       el.title = pointProps.name;
     }
@@ -97,12 +98,13 @@ const MapComponent: React.FC<MapComponentProps> = ({ points }) => {
     if (isPointFeature(feature)) {
       const pointProps = properties as PoetPointProperties;
       marker.setPopup(
-        new maplibregl.Popup({ offset: 25 }).setHTML(`
-      <div class="vintage-popup">
-        <h3>${pointProps.name}</h3>
-        <p>${pointProps.description}</p>
-        <img src="${pointProps.photo}" alt="${pointProps.name}" width="140">
-      </div>
+        new maplibregl.Popup({
+          closeButton: false,
+          className: styles.vintagePopup,
+        }).setHTML(`
+            <h3>${pointProps.name}</h3>
+            <p>${truncateText(pointProps.description, 100)}</p>
+            <p class="${styles.more}">Подробнее</p>
     `)
       );
     }
@@ -198,11 +200,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ points }) => {
     };
   });
 
-  return (
-    <div className="sepia-map-container">
-      <div ref={mapContainer} className="sepia-map" />
-    </div>
-  );
+  return <div ref={mapContainer} className={styles.sepiaMap} />;
 };
 
 export default MapComponent;

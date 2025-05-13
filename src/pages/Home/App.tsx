@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import MapComponent, {
   PoetPointProperties,
 } from '../../components/MapComponent.tsx';
+import styles from './App.module.scss';
+import poet from '@assets/cvetaeva.png';
 
 const App: React.FC = () => {
   const [points, setPoints] = useState<PoetPointProperties[]>([]);
@@ -16,7 +18,7 @@ const App: React.FC = () => {
         lat: 55.7496,
         lng: 37.6022,
         photo:
-          'https://upload.wikimedia.org/wikipedia/commons/6/6b/Marina_Tsvetaeva_Museum_Moscow.jpg',
+          'https://www.m24.ru/b/d/nBkSUhL2hFklns62IL6BrNOp2Z318Ji-mifGnuWR9mOBdDebBizCnTY8qdJf6ReJ58vU9meMMok3Ee2nhSR6ISeO9G1N_wjJ=DhPYScc6iiTxGYl9gEqyJw.jpg',
       },
       {
         id: 2,
@@ -31,9 +33,10 @@ const App: React.FC = () => {
     ]);
   }, []);
   return (
-    <>
+    <main className={styles.main}>
+      <img src={poet} className={styles.poet} />
       <MapComponent points={points} />
-    </>
+    </main>
   );
 };
 

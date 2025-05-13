@@ -1,0 +1,64 @@
+.sepiaMap {
+  width: 40%;
+  height: 70%;
+}
+
+/* Стили для кластеров */
+.clusterMarker {
+  cursor: pointer;
+  width: 42px;
+  height: 42px;
+  background-color: #98562D;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 16px;
+  border: 7px double #FFFFFF;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Стили для отдельных маркеров */
+.sepiaMarker {
+  width: 48px;
+  height: 48px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
+
+/* Винтажный попап */
+.vintagePopup {
+  text-align: left;
+  position: relative;
+  color: #686868;
+  z-index: 5;
+
+  & > div {
+    padding: 8px 12px;
+    border-radius: 10px;
+  }
+
+  & h3 {
+    margin-bottom: 5px;
+  }
+
+  & p {
+    font-size: 0.8em;
+  }
+
+  & img {
+    max-width: 100%;
+    margin: 0 auto;
+    border-radius: 5px;
+  }
+}
+
+.more {
+  color: #0000FF;
+  cursor: pointer;
+}
