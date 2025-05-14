@@ -3,7 +3,6 @@ import MapComponent, {
   PoetPointProperties,
 } from '../../components/MapComponent.tsx';
 import styles from './App.module.scss';
-import poet from '@assets/cvetaeva.png';
 
 const App: React.FC = () => {
   const [points, setPoints] = useState<PoetPointProperties[]>([]);
@@ -34,7 +33,7 @@ const App: React.FC = () => {
   }, []);
   return (
     <main className={styles.main}>
-      <img src={poet} className={styles.poet} />
+      <div className={styles.back} />
       <MapComponent points={points} />
     </main>
   );

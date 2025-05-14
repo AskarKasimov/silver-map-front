@@ -1,5 +1,16 @@
+* {
+  font-family: "Playfair Display", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
 h1, h2, h3, p {
   margin: 0;
+}
+
+h1, h2, h3 {
+  font-weight: 600;
 }
 
 body {

@@ -1,6 +1,13 @@
-.sepiaMap {
+.wrapper {
   width: 40%;
-  height: 70%;
+  min-width: 800px;
+  height: 70svh;
+  overflow: visible;
+}
+
+.sepiaMap {
+  height: 100%;
+  width: 100%;
 }
 
 /* Стили для кластеров */
@@ -36,22 +43,22 @@
   text-align: left;
   position: relative;
   color: #686868;
-  z-index: 5;
+  z-index: 54;
 
   & > div {
     padding: 8px 12px;
     border-radius: 10px;
   }
 
-  & h3 {
+  & > h3 {
     margin-bottom: 5px;
   }
 
-  & p {
-    font-size: 0.8em;
+  & > p {
+    font-size: 0.9em;
   }
 
-  & img {
+  & > img {
     max-width: 100%;
     margin: 0 auto;
     border-radius: 5px;
@@ -61,4 +68,28 @@
 .more {
   color: #0000FF;
   cursor: pointer;
+}
+
+.poet {
+  position: relative;
+  z-index: 333;
+  top: -120%;
+  left: -20%;
+  min-height: 100svh;
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+@media (max-width: 1300px) {
+  .poet {
+    display: none;
+  }
+}
+
+@media (max-width: 1700px) {
+  .poet {
+    max-width: 30svw;
+    min-height: 0;
+    top: -120%;
+  }
 }

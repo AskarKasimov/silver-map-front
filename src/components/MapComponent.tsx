@@ -5,6 +5,7 @@ import styles from './MapComponent.module.scss';
 import markerPoint from '@assets/point.png';
 import Supercluster, { ClusterFeature, PointFeature } from 'supercluster';
 import { truncateText } from '../utils/text.ts';
+import poet from '@assets/cvetaeva.png';
 
 const MAP_STYLE =
   'https://api.maptiler.com/maps/019672dc-4df0-7fa6-afc6-39c61c2ed227/style.json?key=iKHXej3Rp2N1NAr4Xjdf';
@@ -200,7 +201,12 @@ const MapComponent: React.FC<MapComponentProps> = ({ points }) => {
     };
   });
 
-  return <div ref={mapContainer} className={styles.sepiaMap} />;
+  return (
+    <div className={styles.wrapper}>
+      <div ref={mapContainer} className={styles.sepiaMap} />
+      <img src={poet} className={styles.poet} />
+    </div>
+  );
 };
 
 export default MapComponent;
