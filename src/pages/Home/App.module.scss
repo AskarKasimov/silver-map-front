@@ -1,20 +1,31 @@
 .main {
   height: 100svh;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin: 0 auto;
+  gap: 20px;
+}
+
+.horizontalWrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 20px;
+  align-items: start;
+  max-width: 50svw;
+  width: 100%;
+  flex-wrap: nowrap;
 }
 
 .back {
   position: absolute;
-  z-index: 0;
+  z-index: -1;
   width: 100svw;
   height: 100svh;
   background-image: url("/gazeta.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
-  filter: blur(3px);
+  filter: blur(5px);
 }

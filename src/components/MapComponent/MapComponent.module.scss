@@ -1,8 +1,7 @@
 .wrapper {
-  width: 40%;
-  min-width: 800px;
-  height: 70svh;
   overflow: visible;
+  height: 70svh;
+  max-height: 800px;
 }
 
 .sepiaMap {
@@ -76,7 +75,7 @@
   position: relative;
   z-index: 333;
   top: -120%;
-  left: -20%;
+  left: -35%;
   min-height: 100svh;
   pointer-events: none;
   transform: translateX(-50%);
