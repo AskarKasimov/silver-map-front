@@ -1,4 +1,3 @@
-// pickedMarkSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IMark } from './API/models.api.ts';
 
