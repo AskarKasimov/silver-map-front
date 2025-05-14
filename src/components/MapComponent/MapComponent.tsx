@@ -4,22 +4,16 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import styles from './MapComponent.module.scss';
 import markerPoint from '@assets/point.png';
 import Supercluster, { ClusterFeature, PointFeature } from 'supercluster';
-import { truncateText } from '../utils/text.ts';
+import { truncateText } from '../../utils/text.ts';
 import poet from '@assets/cvetaeva.png';
+import { IMark } from '../../store/API/models.api.ts';
+import { useDispatch } from 'react-redux';
+import { setPickedMark } from '../../store/pickedMark.ts';
 
 const MAP_STYLE =
   'https://api.maptiler.com/maps/019672dc-4df0-7fa6-afc6-39c61c2ed227/style.json?key=iKHXej3Rp2N1NAr4Xjdf';
 const INITIAL_CENTER: [number, number] = [37.6173, 55.7558];
 const INITIAL_ZOOM = 11;
-
-export interface PoetPointProperties {
-  id: number;
-  name: string;
-  description: string;
-  lat: number;
-  lng: number;
-  photo: string;
-}
 
 interface ClusterProperties {
   cluster: true;
@@ -28,34 +22,34 @@ interface ClusterProperties {
   point_count_abbreviated: number;
 }
 
-type PoetPointFeature = PointFeature<PoetPointProperties>;
-type PoetClusterFeature = ClusterFeature<ClusterProperties>;
-type PoetFeature = PoetPointFeature | PoetClusterFeature;
+type MarkPointFeature = PointFeature<IMark>;
+type MarkClusterFeature = ClusterFeature<ClusterProperties>;
+type MarkFeature = MarkPointFeature | MarkClusterFeature;
 
 // Type guard для проверки типа фичи
-const isPointFeature = (feature: PoetFeature): feature is PoetPointFeature => {
+const isPointFeature = (feature: MarkFeature): feature is MarkPointFeature => {
   return !('cluster' in feature.properties) || !feature.properties.cluster;
 };
 
 export interface MapComponentProps {
-  points: PoetPointProperties[];
+  points: IMark[];
 }
 
 const MapComponent: React.FC<MapComponentProps> = ({ points }) => {
   const mapContainer = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
-  const superclusterRef = useRef<Supercluster<PoetPointProperties> | null>(
-    null
-  );
+  const superclusterRef = useRef<Supercluster<IMark> | null>(null);
 
   const markersRef = useRef<{ [key: string]: maplibregl.Marker }>({});
+
+  const dispatch = useDispatch();
 
   const clearAllMarkers = () => {
     Object.values(markersRef.current).forEach((marker) => marker.remove());
     markersRef.current = {};
   };
 
-  const createMarker = (feature: PoetFeature) => {
+  const createMarker = (feature: MarkFeature) => {
     const { geometry, properties } = feature;
     const coordinates = geometry.coordinates as [number, number];
 
@@ -84,7 +78,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ points }) => {
       });
     } else {
       // маркер - точка
-      const pointProps = properties as PoetPointProperties;
+      const pointProps = properties as IMark;
       el.className = styles.sepiaMarker;
       el.style.backgroundImage = `url(${markerPoint})`;
       el.title = pointProps.name;
@@ -97,17 +91,24 @@ const MapComponent: React.FC<MapComponentProps> = ({ points }) => {
 
     // popup только для точек
     if (isPointFeature(feature)) {
-      const pointProps = properties as PoetPointProperties;
-      marker.setPopup(
-        new maplibregl.Popup({
-          closeButton: false,
-          className: styles.vintagePopup,
-        }).setHTML(`
-            <h3>${pointProps.name}</h3>
-            <p>${truncateText(pointProps.description, 100)}</p>
-            <p class="${styles.more}">Подробнее</p>
-    `)
-      );
+      const pointProps = properties as IMark;
+      const popup = new maplibregl.Popup({
+        closeButton: false,
+        className: styles.vintagePopup,
+      }).setHTML(`
+      <h3>${pointProps.name}</h3>
+      <p>${truncateText(pointProps.description, 100)}</p>
+      <p class="${styles.more}" id="mark${pointProps.id}">Подробнее</p>
+      `);
+      marker.setPopup(popup);
+      popup.on('open', () => {
+        const popupElement = document.getElementById(`mark${pointProps.id}`);
+        if (popupElement) {
+          popupElement.addEventListener('click', () => {
+            dispatch(setPickedMark(pointProps));
+          });
+        }
+      });
     }
 
     return marker;
@@ -128,7 +129,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ points }) => {
     const clusters = superclusterRef.current.getClusters(
       bbox,
       Math.floor(zoom)
-    ) as PoetFeature[];
+    ) as MarkFeature[];
 
     clearAllMarkers();
 
@@ -159,31 +160,31 @@ const MapComponent: React.FC<MapComponentProps> = ({ points }) => {
         'top-right'
       );
 
-      superclusterRef.current = new Supercluster<
-        PoetPointProperties,
-        ClusterProperties
-      >({
+      superclusterRef.current = new Supercluster<IMark, ClusterProperties>({
         radius: 60,
         maxZoom: 16,
       });
 
       // формат Supercluster
-      const pointsSuperCluster: PointFeature<PoetPointProperties>[] =
-        points.map((location) => ({
+      const pointsSuperCluster: PointFeature<IMark>[] = points.map(
+        (location) => ({
           type: 'Feature',
           properties: {
             id: location.id,
             name: location.name,
-            description: location.description,
-            lat: location.lat,
-            lng: location.lng,
+            coord_x: location.coord_x,
+            coord_y: location.coord_y,
             photo: location.photo,
+            description: location.description,
+            time_start: location.time_start,
+            time_end: location.time_end,
           },
           geometry: {
             type: 'Point',
-            coordinates: [location.lng, location.lat],
+            coordinates: [location.coord_x, location.coord_y],
           },
-        }));
+        })
+      );
 
       superclusterRef.current.load(pointsSuperCluster); // загрузка точек
 
