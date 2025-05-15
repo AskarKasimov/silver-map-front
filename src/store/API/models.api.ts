@@ -1,9 +1,3 @@
-export type IExample = {
-  id: number;
-  name: string;
-  description: string;
-};
-
 export type IMark = {
   id: number;
   name: string;
@@ -21,4 +15,12 @@ export type IPoet = {
   bio: string;
   time_birth: string;
   time_death: string;
+};
+
+export type IWork = {
+  id: number;
+  name: string;
+  description: string;
+  link: string;
+  poet_id: number;
 };
