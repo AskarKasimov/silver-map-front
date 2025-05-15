@@ -18,46 +18,38 @@
   font-weight: 500;
 }
 
-.select {
-  appearance: none;
-  padding: .7rem 5rem .7rem 1.5rem;
-  font-size: 1.5rem;
-  border: 2px solid #4a4a4a;
-  border-radius: 0;
-  box-shadow: 3px 3px 0 #c4a47a,
-  inset 2px 2px 5px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  background: #fffaf0 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%234a4a4a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 1rem center;
-  background-size: 1.2rem;
-
-  &:hover {
-    background-color: #fdf5e6;
-    box-shadow: 4px 4px 0 #c4a47a,
-    inset 2px 2px 5px rgba(0, 0, 0, 0.1);
-  }
-
-  &:focus {
-    outline: none;
-    border-color: #2a2a2a;
-    box-shadow: 0 0 0 3px rgba(66, 66, 66, 0.2),
-    3px 3px 0 #c4a47a;
-  }
+.customSelect {
+  position: relative;
+  min-width: 500px;
 }
 
-// Стили для опций
-option {
+.selectHeader {
+  padding: 0.7rem 1.5rem;
+  font-size: 1.5rem;
+  border: 2px solid #4a4a4a;
+  cursor: pointer;
   background: #fffaf0;
-  padding: 1rem;
-  border-bottom: 1px dashed #c4a47a;
-  font-size: 1rem;
+  box-shadow: 3px 3px 0 #c4a47a;
+}
 
-  &:checked {
-    background: #c4a47a linear-gradient(0deg, #c4a47a 0%, #c4a47a 100%);
-    color: white;
-  }
+.dropdownList {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 300px;
+  overflow-y: auto;
+  border: 2px solid #4a4a4a;
+  border-top: none;
+  background: #fffaf0;
+  z-index: 1000;
+}
+
+.dropdownItem {
+  padding: 0.7rem 1.5rem;
+  cursor: pointer;
 
   &:hover {
-    background: #fdf5e6 !important;
+    background: #fdf5e6;
   }
 }

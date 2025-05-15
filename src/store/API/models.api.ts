@@ -19,6 +19,6 @@ export type IPoet = {
   id: number;
   name: string;
   bio: string;
-  time_birth: number;
-  time_death: number;
+  time_birth: string;
+  time_death: string;
 };

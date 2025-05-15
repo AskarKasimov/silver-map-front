@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { IExample } from './models.api';
+import { IMark, IPoet } from './models.api';
 
 export const projectAPI = createApi({
   reducerPath: 'API',
@@ -8,17 +8,22 @@ export const projectAPI = createApi({
     credentials: 'include', // для токена авторизации
   }),
   endpoints: (build) => ({
-    getDefault: build.query<IExample[], void>({
-      query: () => 'examples',
+    getEventsByPoetId: build.query<IMark[], number>({
+      query: (poet_id: number) => ({
+        url: 'events',
+        params: {
+          poet_id,
+        },
+        METHOD: 'GET',
+      }),
     }),
-    addDefault: build.mutation<IExample, Partial<IExample>>({
-      query: (body) => ({
-        url: 'examples',
-        method: 'POST',
-        body,
+    getAllPoets: build.query<IPoet[], void>({
+      query: () => ({
+        url: 'poets',
+        METHOD: 'GET',
       }),
     }),
   }),
 });
 
-export const { useAddDefaultMutation, useGetDefaultQuery } = projectAPI;
+export const { useGetAllPoetsQuery, useGetEventsByPoetIdQuery } = projectAPI;

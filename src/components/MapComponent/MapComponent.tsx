@@ -172,8 +172,8 @@ const MapComponent: React.FC<MapComponentProps> = ({ points }) => {
           properties: {
             id: location.id,
             name: location.name,
-            coord_x: location.coord_x,
-            coord_y: location.coord_y,
+            coord_x: location.coord_y,
+            coord_y: location.coord_x,
             photo: location.photo,
             description: location.description,
             time_start: location.time_start,
@@ -181,7 +181,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ points }) => {
           },
           geometry: {
             type: 'Point',
-            coordinates: [location.coord_x, location.coord_y],
+            coordinates: [location.coord_y, location.coord_x],
           },
         })
       );
