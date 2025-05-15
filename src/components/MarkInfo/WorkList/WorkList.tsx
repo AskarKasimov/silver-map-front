@@ -8,7 +8,11 @@ interface WorksListProps {
 
 const WorksList: React.FC<WorksListProps> = ({ works }) => {
   if (works.length === 0) {
-    return <div className={style.empty}>Произведения не найдены.</div>;
+    return (
+      <div className={style.empty}>
+        Нет известных произведений, связанных с этим местом/событием
+      </div>
+    );
   }
 
   return (
