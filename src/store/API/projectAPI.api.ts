@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { IMark, IPoet } from './models.api';
+import { IMark, IPoet, IWork } from './models.api';
 
 export const projectAPI = createApi({
   reducerPath: 'API',
@@ -23,7 +23,20 @@ export const projectAPI = createApi({
         METHOD: 'GET',
       }),
     }),
+    getWorksByEventId: build.query<IWork[], number>({
+      query: (event_id: number) => ({
+        url: `/events/${event_id}/works`,
+        params: {
+          event_id,
+        },
+        METHOD: 'GET',
+      }),
+    }),
   }),
 });
 
-export const { useGetAllPoetsQuery, useGetEventsByPoetIdQuery } = projectAPI;
+export const {
+  useGetAllPoetsQuery,
+  useGetEventsByPoetIdQuery,
+  useGetWorksByEventIdQuery,
+} = projectAPI;
