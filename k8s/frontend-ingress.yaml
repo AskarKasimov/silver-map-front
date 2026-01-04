@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: askar.tatar
+    - host: silvermap.askar.tatar
       http:
         paths:
           - path: /
