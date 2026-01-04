@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: Build and Deploy to Kubernetes
 
 on:
   push:
@@ -7,6 +7,9 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: askarkasimov/silver-map-front
+  K8S_NAMESPACE: silver
+  DEPLOYMENT_NAME: frontend
+  CONTAINER_NAME: frontend
 
 jobs:
   build:
@@ -27,37 +30,40 @@ jobs:
         with:
           driver: docker-container
 
-      - name: Build and push
+      - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
           file: ./Dockerfile
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           build-args: |
-            VITE_API_URL=https://api.silvermap.askar.su
+            VITE_API_URL=${{ secrets.VITE_API_URL }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
   deploy:
     needs: build
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Login to GHCR
-        run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u askarkasimov --password-stdin
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
 
-      - name: Pull latest image
+      - name: Configure kubeconfig
         run: |
-          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-
-      - name: Deploy
-        run: |
-          docker compose -f docker-compose.deploy.yaml down
-          docker compose -f docker-compose.deploy.yaml up -d --force-recreate
-          docker image prune -f
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 --decode > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
         env:
-          VITE_API_URL: https://api.silvermap.askar.su
+          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl set image deployment/${{ env.DEPLOYMENT_NAME }} \
+            ${{ env.CONTAINER_NAME }}=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            -n ${{ env.K8S_NAMESPACE }}
+
+          kubectl rollout status deployment/${{ env.DEPLOYMENT_NAME }} -n ${{ env.K8S_NAMESPACE }}
