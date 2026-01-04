@@ -48,6 +48,7 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
+          export KUBECONFIG=$HOME/.kube/config
           kubectl set image deployment/frontend \
             frontend=ghcr.io/askarkasimov/silver-map-front:${{ github.sha }} \
             -n silver
